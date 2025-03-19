@@ -55,10 +55,10 @@ This is an assessment project named **hello-world** that implements login and si
 
    ```bash
    cd client
-   npm start
+   npm run dev
    ```
 
-3. Access the application at `http://localhost:3000`.
+3. Access the application at `http://localhost:5173`.
 
 ## Contributing
 
