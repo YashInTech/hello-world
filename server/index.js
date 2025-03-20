@@ -2,14 +2,13 @@ import express from 'express';
 import './Models/db.js';
 import bodyParser from 'body-parser';
 import cors from 'cors';
-import routerA from './Routes/AuthRouter.js';
-import routerH from './Routes/HelloRouter.js';
+import routerA from './Models/Routes/AuthRouter.js';
+import routerH from './Models/Routes/HelloRouter.js';
+import { verifyEmail } from './Controllers/AuthController.js';
 
 const app = express();
 
-app.get('/hello', (req, res) => {
-  res.send('Hello World');
-});
+app.get('/users/:id/verify/:token', verifyEmail);
 
 app.use(bodyParser.json());
 app.use(cors());

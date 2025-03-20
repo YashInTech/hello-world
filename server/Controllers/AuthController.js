@@ -9,15 +9,19 @@ const signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
     let user = await UserModel.findOne({ email });
+    console.log('Checking if user exists:', email); // Added logging
     if (user) {
+      console.log('User already exists:', email); // Added logging
       return res
         .status(409)
         .json({ message: 'User Already Exists', success: false });
     }
+
     const userModel = new UserModel({ name, email, password });
     userModel.password = await bcrypt.hash(password, 10);
     user = await userModel.save();
 
+    console.log('Creating new user:', email); // Added logging
     const token = await new Token({
       userId: user._id,
       token: crypto.randomBytes(32).toString('hex'),
@@ -60,10 +64,10 @@ const login = async (req, res) => {
           userId: user._id,
           token: crypto.randomBytes(32).toString('hex'),
         }).save();
-        const url = `${process.env.BASE_URL}users/${user._id}/verify/${token.token}`;
+        const url = `${process.env.BASE_URL}/users/${user._id}/verify/${token.token}`;
         await sendEmail(user.email, 'Verify your email', url);
       }
-      res.status(400).json({
+      return res.status(400).json({
         message: 'Please verify your email',
       });
     }
@@ -86,9 +90,14 @@ const login = async (req, res) => {
 
 const verifyEmail = async (req, res) => {
   try {
+    console.log('Verifying email for user ID:', req.params.id); // Added logging
+    console.log('Using token:', req.params.token); // Added logging
+
     const user = await UserModel.findOne({ _id: req.params.id });
     if (!user) {
-      return res.status(404).json({ message: 'Invalid Link', success: false });
+      return res
+        .status(404)
+        .json({ message: 'User not found', success: false });
     }
     const token = await Token.findOne({
       userId: user._id,
@@ -97,12 +106,16 @@ const verifyEmail = async (req, res) => {
     if (!token) {
       return res.status(400).json({ message: 'Invalid Link', success: false });
     }
+
+    // Update user verification status
     await UserModel.updateOne({ _id: user._id }, { verified: true });
-    await token.remove();
-    res
-      .status(200)
-      .json({ message: 'Email Verified Successfully', success: true });
+
+    res.status(200).json({
+      message: 'Email Verified Successfully! Please Login',
+      success: true,
+    });
   } catch (error) {
+    console.error('Verification error:', error); // Added logging for debugging
     res.status(500).json({ message: 'Internal Server Error', success: false });
   }
 };

@@ -7,11 +7,18 @@ const EmailVerify = () => {
   const { id, token } = useParams();
 
   useEffect(() => {
+    console.log(`Verifying email with ID: ${id} and Token: ${token}`);
     const verifyEmailUrl = async () => {
       try {
         const url = `http://localhost:3000/users/${id}/verify/${token}`;
 
-        const response = await fetch(url);
+        console.log(`Fetching URL: ${url}`);
+        const response = await fetch(url, {
+          cache: 'no-cache',
+        });
+
+        console.log(`Response status: ${response.status}`);
+        console.log(`Response ok: ${response.ok}`);
 
         if (response.ok) {
           setValidUrl(true);

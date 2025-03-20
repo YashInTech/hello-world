@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { handleError, handleSuccess } from '@/utils';
+import { LuEye, LuEyeClosed } from 'react-icons/lu';
 
 function Login() {
   const [loginInfo, setLoginInfo] = useState({
@@ -52,6 +53,8 @@ function Login() {
     }
   };
 
+  const [Password, setPassword] = useState(false);
+
   return (
     <div className='flex justify-center items-center h-screen bg-gradient-to-r from-indigo-500 to-indigo-700'>
       <div className='bg-white p-10 rounded-lg shadow-2xl w-full max-w-lg'>
@@ -77,15 +80,27 @@ function Login() {
             <label className='block text-sm font-medium text-gray-700'>
               Password
             </label>
-            <input
-              type='password'
-              placeholder='Enter Password...'
-              name='password'
-              autoFocus
-              value={loginInfo.password}
-              onChange={handleChange}
-              className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none'
-            />
+            <div className='relative'>
+              <input
+                onChange={handleChange}
+                type={Password ? 'text' : 'password'}
+                autoFocus
+                name='password'
+                placeholder='Enter Password...'
+                value={loginInfo.password}
+                className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none pr-10'
+              />
+              <div
+                className='absolute inset-y-0 right-3 flex items-center cursor-pointer'
+                onClick={() => setPassword(!Password)}
+              >
+                {Password ? (
+                  <LuEye className='h-6 w-6 text-gray-500' />
+                ) : (
+                  <LuEyeClosed className='h-6 w-6 text-gray-500' />
+                )}
+              </div>
+            </div>
           </div>
           <button
             type='submit'
