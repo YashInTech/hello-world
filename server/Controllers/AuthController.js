@@ -1,4 +1,5 @@
 import UserModel from '../Models/User.js';
+import Profile from '../Models/Profile.js'; // Importing Profile model
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import Token from '../Models/Token.js';
@@ -120,4 +121,19 @@ const verifyEmail = async (req, res) => {
   }
 };
 
-export { signup, login, verifyEmail };
+const fetchImage = async (req, res) => {
+  try {
+    const profile = await Profile.findOne(); // Fetch the first profile
+    if (!profile) {
+      return res
+        .status(404)
+        .json({ message: 'No image found', success: false });
+    }
+    res.status(200).json({ image: profile.myFile, success: true });
+  } catch (err) {
+    console.error('Fetch image error:', err);
+    res.status(500).json({ message: 'Internal Server Error', success: false });
+  }
+};
+
+export { signup, login, verifyEmail, fetchImage };
